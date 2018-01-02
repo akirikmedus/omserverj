@@ -1,0 +1,257 @@
+#
+# Configuration file for OpenMed Manager 
+# Copyright (c) 2000-2001 by eHEalthEngines Inc. All rights reserved. 
+# $Id: tm_prefs,v 1.37 2003/12/04 19:33:26 grinberg Exp $ 
+# 
+# This is the preferences file. The first section 
+# is the general section, describing the properties 
+# for the local OpenMed Manager. 
+# 
+[OpenMed Manager] 
+; Local OpenMed Manager name 
+localSite	= My Local OpenMed Manager 
+ 
+; Local OpenMed Manager's IP address 
+localIpAddress	= localhost 
+ 
+; Local OpenMed Manager's database login name 
+localUser	= sa 
+ 
+; Local OpenMed Manager's database login password 
+localPasswd	= allpriv 
+ 
+; Local OpenMed Manager's database server port number 
+localPortNumber	= 7543 
+ 
+; Local OpenMed Manager's database name 
+localDBName	= us 
+ 
+; Services the OpenMed Manager provides 
+services	= DISPATCHER | ROUTER | DBBACKUP
+ 
+; Sleep interval for each service 
+sleepInterval	= 30 
+ 
+; Use the following two keys to control the working time 
+; of services. They can also be used under each section 
+; to control individual service. 
+;suspendBegin	= 00:00 
+;suspendEnd	= 00:01 
+ 
+# 
+# Properties for DISPATCHER 
+# 
+[DISPATCHER] 
+; Sleep interval for DISPATCHER, overriding [OpenMed Manager] 
+;sleepInterval	= 40 
+;makeJPEG	= true 
+;pushDICOM 	= JPG|TIF|DCM|DCMF|RAW 
+;pushPriors first field could be ALL, NONE, MODALITY, REPORTS second field number of days to look back
+;pushPriors	= NONE|0
+ 
+[DBBACKUP]
+;dataDumpTime=Monday@00:00
+;xlogDumpTime=Tuesday@00:00, Wednesday@00:00, Thursday@00:00, Friday@00:00, Saturday@00:00
+;backupDirectory=/export/home/ati/dbdump
+
+[ROUTER] 
+; Sleep interval for ROUTER, overriding [OpenMed Manager] 
+;sleepInterval	= 40 
+;defaultRoute= 
+ 
+[MOVER] 
+name=PUSHER 
+;sleepInterval	= 40 
+protocol	= PS 
+sourceSite	= 911- 
+sourceUser	= DBA 
+sourcePasswd	= SQL 
+sourceFtpUser	= ati 
+sourceFtpPasswd	= telemed1 
+destSite	= 900- 
+destUser	= sa 
+destPasswd	= allpriv 
+destFtpUser	= ati 
+destFtpPasswd	= telemed1 
+ 
+
+[TRANSFORMER] 
+# Transform params for creating jpegs. Default is "m:0 | s:64".
+;transformParams	= m:800 | s:64  
+
+# Wavelet compression setup. *** INTRODUCED in Version 3 ***
+# For dicom images if allowWaveletCompression is true and if the original file is not compressed, 
+# then the transformer produces wavelet compressed dicom (with .dcm extension).  If this happens 
+# then the original (uncompressed) file is renamed into .dcmtmp.
+# If allowWaveletCompression = false then waveletCompressionThreshold is ignored
+# Otherwise, if waveletCompressionThreshold is not set then its default value 
+# ("MR:1 | CT:1 | RF: 1 | *:1") is used.
+;allowWaveletCompression = true
+;waveletCompressionThreshold = CR:10 | MR:10 | CT:10 | RF: 1O | *:10
+
+# setup for the status of original file after transformation.  *** DEPRECATED from version 3***
+;deleteFlag	= false
+
+ 
+[DCMIMPORT] 
+dcmSourceId	= 134- 
+;dcmDirectory = /export/home/ati/dcmimport 
+;imageFilePrefix =  
+;imageFileExtension = null 
+;semFilePrefix	= FETCHI 
+;semFileExtension = .SEM 
+;destSiteId 	= 134- 
+# *** the next line (deleteImageFile) should be deprecated from version 3 ***
+deleteImageFile	= true 
+followHL7Order	= false 
+hl7Facility	= hl7FacilityName 
+hl7Application	= hl7ApplicationName 
+;Parameters for the Directory import 
+;importDirectories = false 
+;directoryPrefix	=  
+;directoryFilesExtension = .IMG 
+;directorySemFilePrefix  = FETCH 
+;directorySmFileExtension = .SEM 
+;attentionFileExtension = .ATT 
+#
+# compression params  *** DEPRECATED from version 3 ***
+# 
+;compressImage = true 
+;threshold = CR:NO | MR:50 | CT:50 | RF: NO | *:100 
+
+;importAsReport  = request 
+;reportType     = PRELIMINARY 
+;provider       = eHealthEngines Inc. 
+#
+# direct push settings.  *** INTRODUCED in version 3 ***
+# 
+;useDirectPush = true|false  :: disable "pushDicom = DCM" for DISPATCHER 
+;directPushDestinations = MDS1@localhost:104 | MDS2@host2.domain.com:104 
+
+[FILEIMPORT] 
+;sourceSiteId	= ID1- 
+;destSiteId		= ID2- 
+;dropPath		= /export/home/ati/fileimport 
+;semFilePrefix	= FETCHI 
+;semFileExtension	= .SEM 
+;descriptorFilePrefix =  
+;descriptorFileExtension =  
+deleteImageFile	= true  
+
+
+[DCMEXPORT] 
+receivingSites	= MDS1@localhost:104 | MDS2@host2.domain.com:104 
+;ruleType	= case-specialty 
+;ruleType	= study-type 
+;ruleType	= study_originating_site_id
+;ruleType	= study_destination_site_id
+;exportTarget_1	= MDS1 | RAD, PATH, DERM 
+;exportTarget_2	= MDS2 | PMC 
+;exportTarget_4	= MDS1, MDS2 | 1006
+;exportTarget_5 = MDS1 | TIS- , EHE1, EHE2 
+exportTarget	= MDS1, MDS2 | * 
+ 
+ 
+[IMSAUX] 
+;port		= 1110 
+;reserve	= 200 
+;MaxConnection	= 3 
+ 
+[OMMMC] 
+;port		=1112 
+;MaxConnection  =3 
+ 
+[DCMCSTORE] 
+;aeTitle	= OMMAE 
+;port		= 2100 
+;consumerProcess = DCMIMPORT 
+;storageLocation = /export/home/ati/dcmimport 
+;semFilePrefix   = FETCHI 
+;semFileExtension = .SEM 
+;MaxConnection	= 3 
+knownAETitles   = DEPLAB01@host74:4444 | MDS2@host.domain.com:104 | MDS3@host.domain2.com:2000
+
+[DCMCFIND] 
+;port		= 104 
+;MaxConnection	= 2 
+;AETitle	= OMMAE
+;IPAllowed	= 63.72.244.133
+;AEAllowed	= bogusAE
+ 
+[StorageService] 
+;DB_IP		= 63.72.244.210 
+;DB_PORT	= 7543 
+;DB_NAME	= us 
+;DB_USER	= sa 
+;DB_PASSWORD	= allpriv 
+;DB_LC		= 1 
+;DB_HC		= 1  
+
+[OMMHL7LISTENER]
+;Vendors	=	MEDITECH
+;MaxConnections	= 2
+;port		=	7575
+;endSegmentChar	= 13
+;endMessageChar	= 13
+;filteredChars	= 10 | 28 | 127
+;additionalFilteredChars	= 11
+;ReceiverAddress	= localHost
+;ReceiverPort	= 7575
+;TimeOut		= 5
+;OmvLocalAddress = localhost:80
+;OmvUrl		= /omvcgi/view_study2.cgi?
+;OmvStudyUrl	= study_id
+;OmvUserUrl	= user_id
+;OmvPassUrl	= pkey
+;OmvDefaultUser	= rad
+;OmvDefaultPass	= rad
+
+[QUERYRETRIEVE]
+;sleepInterval = 10
+#
+# persistent info format:
+#
+#	accessLogFileName = 'string'	// this file contains one field represented date & time 
+#						// in the following format:
+#						// yyyyMMddhhmmss.SSS 
+#						// 	where yyyyMMdd - date and hhmmss.SSS - time
+#
+# rules:
+#
+# 	querySites = <calledAET>@<host>:<port> | ...
+# 	moveDestinations = <moveDestination>[ | <moveDestination>]	// for all querySites
+# 	moveDestinations<calledAET> = <moveDestination>[ | ...] 	// for calledAET site
+#
+# matching parameters:
+#	
+#	queryBy[<calledAET>] = level | group, element [, value[, range value]] | ...  
+#		or: queryBy[<calledAET>] = queryType
+#			where queryType is currently only UPDATED_PRESENTATION_STATE
+#
+#	retrieveBy[<calledAET>] = level | group, element [ | group, element | ... ]
+#		or: retrieveBy[<calledAET>] = retrieveType
+#			where retrieveType is currently only SOP_INSTANCE_UID
+#
+# meaning of some constants:
+#	$LAST_QUERY_DATE$	- last (previous) query date
+#	$CURRENT_DATE$	- a current date
+#	$LAST_QUERY_TIME$	- last (previous) query time
+#	$CURRENT_TIME$	- a current time
+#
+;accessLogFileName = /export/home/ati/queryRetrieveAccess.log
+;querySites = THAZEL@192.168.100.189:4444
+;moveDestinations = OMMAE
+
+;queryBy = IMAGE \
+;	  | 0x0010, 0x0010 \
+;	  | 0x0008, 0x0060, PR \
+;	  | 0x0070, 0x0082, $LAST_QUERY_DATE$, $CURRENT_DATE$ \
+;	  | 0x0070, 0x0082, $LAST_QUERY_TIME$, $CURRENT_TIME$ 
+# or 
+;queryBy = UPDATED_PRESENTATION_STATE
+
+;retrieveBy = IMAGE | 0x0008, 0x0018
+retrieveBy = SOP_INSTANCE_UID
+#
+
+

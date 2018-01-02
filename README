@@ -1,0 +1,10 @@
+javac -sourcepath src -d classes src/mu/*.java
+java -cp classes/ mu.OMServer
+
+javac -cp lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar -sourcepath src -d classes src/**/*.java
+
+java -cp classes/ mu.OMServer
+
+java -cp classes:lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore tests.OMServerTest
+java -cp classes:lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore tests.StrUtilsTest
+java -cp classes:lib/junit-4.12.jar:lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore tests.UtilsTest
