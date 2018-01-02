@@ -6,5 +6,10 @@ public class StrUtils
 	{
 		return "Hello, World!";
 	}
+
+	public static String getHash(String str)
+	{
+		return "";
+	}
 }
 
