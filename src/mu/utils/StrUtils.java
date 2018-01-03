@@ -8,28 +8,23 @@ import java.util.Map;
 
 public class StrUtils
 {
-	public static String getGreetings()
-	{
-		return "Hello, World!";
-	}
-
 	public static String getHash(String str)
 	{
-		MessageDigest md = null;
+		MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-1");
 			return byteArrayToHexString(md.digest(str.getBytes("UTF-8")));
 		}
 		catch(NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
-		catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+		catch (UnsupportedEncodingException e2) {
+			//e2.printStackTrace();
 		}
 		return "";
 	}
 
-	public static String byteArrayToHexString(byte[] b) {
+	private static String byteArrayToHexString(byte[] b) {
 		String result = "";
 		for (int i=0; i < b.length; i++) {
 			result += Integer.toString( ( b[i] & 0xff ) + 0x100, 16).substring( 1 );
@@ -61,10 +56,9 @@ public class StrUtils
 				} else if (0 == a.indexOf("licCount:^")) {
 					licenselen = a.substring(10);
 				} else if (0 == a.indexOf("licString:^")) {
-					String sss = data;
-					int nIndex = sss.indexOf("licString:^");
+					int nIndex = data.indexOf("licString:^");
 					if (nIndex > 0)
-						license = sss.substring(nIndex + 11);
+						license = data.substring(nIndex + 11);
 
 					nIndex = license.indexOf("endOfLicString");
 					if (nIndex > 0)

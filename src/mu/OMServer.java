@@ -4,48 +4,53 @@ import mu.ommlib.HttpClient;
 import mu.utils.*;
 import mu.ommlib.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 public class OMServer {
-	public OMServer() {
+
+	private OMMDB db = new OMMDB();
+
+	private Logger logger = new Logger();
+
+	public OMServer() 	{
 	}
 
-	public void doLicense()	{
-
-		OMMDB db = new OMMDB();
+	private void doLicense()	{
 
 		String strTime = "";// = strftime("%Y%m%d%H%M",gmtime());
 		String strTimeStamp = "";// = strftime("%Y%m%d%H%M%S",gmtime());
 
-		if(!OMMDB.checkDBtables(true)) {
-			//logger.error("Database check failed. Cannot continue.");
+		if(!db.checkDBtables(true)) {
+			logger.error("Database check failed. Cannot continue.");
 			return;
 		}
 
 		String licenseFile = "/opt/OMTCmm/cf/license.dat";
-		String medusHomeDir = "/opt/OMTCmm/";
+		//String medusHomeDir = "/opt/OMTCmm/";
 
 		boolean bLicense = true;//os.path.isfile(licenseFile);
 		boolean bDemoLicense = !bLicense;
 
-		String macaddress = OMMDB.getMachineID();
-		//String macaddress = OMMDB.getMachineID();
-		//logger.info('mac address: '+macaddress);
+		String macaddress = db.getMachineID();
+		//String macaddress = db.getMachineID();
+		logger.info("mac address: " + macaddress);
 
-		String siteid = OMMDB.getSiteID();
-		//logger.info('site id: '+siteid);
+		String siteid = db.getSiteID();
+		logger.info("site id: " + siteid);
 
-		String productKey = OMMDB.getProductKey();
-		//logger.info('product key: '+productKey);
+		String productKey = db.getProductKey();
+		logger.info("product key: " + productKey);
 
 		String hash = "";
 		if (bLicense) {
 			hash = FileUtils.getHash(licenseFile);
-			//logger.info('license file hash = '+hash)
+			logger.info("license file hash = " + hash);
 		}
 
-		String request = "VERIFY";
-		String response = OMMDB.GetLicenseCheckResponse(); //TRANSFER or HARDWARE_CHANGE
+		String request;
+		String response = db.GetLicenseCheckResponse(); //TRANSFER or HARDWARE_CHANGE
 		if(null != response)
 			request = response;
 		else
@@ -55,25 +60,24 @@ public class OMServer {
 				request = "VERIFY";
 
 		String data = HttpClient.getLicenseInfo(productKey,macaddress,request,hash,strTimeStamp);
-		//logger.info('FROM POST:'+data);
+		logger.info("FROM POST:" + data);
 
 		if(null == data) {
 			String str = strTime + "|FAILED_IN_POST|FAILED_IN_POST_MSG|";
-			OMMDB.reportLicenseCheck("Failed in POST", str);
+			db.reportLicenseCheck("Failed in POST", str);
 			return;
 		}
 
 		Map<String, String> map = StrUtils.parseLicenseReturn(data);
-		//logger.info('message:'+message+'; status:'+status);
 
 		if(null == map) {
 			String str = strTime + "|FAILED_IN_POST|FAILED_IN_POST_MSG|Corrupted return from server";
-			OMMDB.reportLicenseCheck("Corrupted return from server", str);
+			db.reportLicenseCheck("Corrupted return from server", str);
 			return;
 		}
 
-		String message = "", messagecode = "", messagestring = "", status = "", licensecoderm = "",
-				license = "", licenselen = "", messtimestamp = "";
+		String message, messagecode, license, status, licensecoderm;
+		//String messagestring, licenselen, messtimestamp;
 		message = (null == map.get("message") ? "" : map.get("message"));
 		messagecode = (null == map.get("messagecode") ? "" : map.get("messagecode"));
 		//messagestring = (null == map.get("messagestring") ? "" : map.get("messagestring"));
@@ -83,194 +87,177 @@ public class OMServer {
 		//licenselen = (null == map.get("licenselen") ? "" : map.get("licenselen"));
 		//messtimestamp = (null == map.get("messtimestamp") ? "" : map.get("messtimestamp"));
 
+		logger.info("message:" + message + "'; status:" + status);
+
 		String str = strTime + '|' + status + '|' + messagecode + '|' + message;
-		OMMDB.reportLicenseCheck("",str);
+		db.reportLicenseCheck("",str);
 
-		if("PRODUCT_KEY_NOT_REGISTERED" == status || "'NO_LICENSE" == status)
+		if(status.equals("PRODUCT_KEY_NOT_REGISTERED") || status.equals("NO_LICENSE"))
 			onNoLicense(bDemoLicense, licenseFile, strTime, status, message, messagecode);
-		else if ("LICENSE_ISSUED" == status)
+		else if (status.equals("LICENSE_ISSUED"))
 			onNewLicense(licenseFile, license, licensecoderm);
-		else if ("OK" == status)
+		else if (status.equals("OK"))
 			onOk();
-		else if ("POSSIBLE_TRANSFER" == status)
+		else if (status.equals("POSSIBLE_TRANSFER"))
 			onPossibleTransfer(strTime, status, message, messagecode);
-		else if ("FAILED" == status)
+		else if (status.equals("FAILED"))
 			onFailed(productKey, strTime, status, message, messagecode);
-		else if ("TRANSFER_FAILED" == status)
+		else if (status.equals("TRANSFER_FAILED"))
 			onTransferFailed(strTime, status, message, messagecode);
-		else if ("TRANSFER_DENIED" == status)
+		else if (status.equals("TRANSFER_DENIED"))
 			onTransferDenied(strTime, status, message, messagecode);
-		else if ("TRANSFER_COMPLETE" == status)
+		else if (status.equals("TRANSFER_COMPLETE"))
 			onTransferComplete(licenseFile, license, licensecoderm);
-		else if ("LICENSE_DISABLED" == status)
+		else if (status.equals("LICENSE_DISABLED"))
 			onLicenseDisabled(strTime, status, message, messagecode, licenseFile);
-		else if ("CORRUPTED" == status)
-			onCorrupted(licenseFile, strTime, status, message, messagecode, productKey, macaddress, strTimeStamp);
+		else if (status.equals("CORRUPTED"))
+			onCorrupted(licenseFile, strTime, productKey, macaddress, strTimeStamp);
 		else
-			;//logger.error('something is wrong, should not be here');
+			logger.error("something is wrong, should not be here");
 	}
 
-	public static void deleteLicenseFile(String fileName) {
-		//logger.info('deleting file: ' + fileName);
-		//os.remove(fileName);
-		//logger.error('Failed to delete file ' + fileName, exc_info = False);
+	private void deleteLicenseFile(String fileName) {
+		logger.info("deleting file: " + fileName);
+		File f = new File(fileName);
+		if(!f.delete())
+			logger.error("Failed to delete file " + fileName);
 	}
 
-	public static void saveLicenseFile(String fileName, String license) {
-		//logger.info('saving license file: ' + fileName)
+	private void saveLicenseFile(String fileName, String license) {
+		logger.info("saving license file: " + fileName);
+		try {
+			File f = new File(fileName);
+			f.createNewFile();
+		} catch (IOException e) {
+			//e.printStackTrace();
+			logger.error("Failed to save file " + fileName);
+		}
 		//f = open(fileName, 'w')
 		//f.write(license)
 		//f.close()
-		//logger.error('Failed to save file ' + fileName, exc_info = False)
+
 	}
 
-	public static void onNoLicense(boolean bDemoLicense, String licenseFile, String strTime, String status, String message, String messagecode) {
-		//logger.info('onNoLicense')
+	private void onNoLicense(boolean bDemoLicense, String licenseFile, String strTime, String status, String message, String messagecode) {
+		logger.info("onNoLicense");
 
-		if ("" == messagecode)
-			OMMDB.setUserReplyString(strTime + '|' + status + '|' + message, "");
-		else
-			OMMDB.setUserReplyString(strTime + '|' + status + '|' + messagecode, "");
+		db.setUserReplyString(strTime + '|' + status + '|' + (messagecode.isEmpty() ? message : messagecode), "");
 
 		if (!bDemoLicense) {
 			deleteLicenseFile(licenseFile);
-			OMMDB.forseUpdatePrivBasedOnLicensing();
+			db.forseUpdatePrivBasedOnLicensing();
 		}
 	}
 
-	public static void onNewLicense(String licenseFile, String license, String licensecoderm) {
-		//logger.info('onNewLicense')
+	private void onNewLicense(String licenseFile, String license, String licensecoderm) {
+		logger.info("onNewLicense");
 
-		OMMDB.hideDisabled(false);
+		db.hideDisabled(false);
 		//licenseCodeLcNew = su.getHash(license)
 
 		saveLicenseFile(licenseFile, license);
 		String licenseCodeLcNewFile = FileUtils.getHash(licenseFile);
-		if (licensecoderm != licenseCodeLcNewFile)
-			;//logger.error("Hash code don't match. Received: " + licensecoderm + " from file: " + licenseCodeLcNewFile)
+		if (!licensecoderm.equals(licenseCodeLcNewFile))
+			logger.error("Hash code don't match. Received: " + licensecoderm + " from file: " + licenseCodeLcNewFile);
 
-		OMMDB.setUserReplyString("", "");
+		db.setUserReplyString("", "");
 
-		OMMDB.forseUpdateMaxBasedOnLicensing(licenseFile);
-		OMMDB.forseUpdatePrivBasedOnLicensing(licenseFile);
+		db.forseUpdateMaxBasedOnLicensing(licenseFile);
+		db.forseUpdatePrivBasedOnLicensing(licenseFile);
 		//fu.updateWatcherBasedOnLicensing() - no need
 	}
 
-	public static void onTransferComplete(String licenseFile, String license, String licensecoderm) {
-		//logger.info('onTransferComplete')
+	private void onTransferComplete(String licenseFile, String license, String licensecoderm) {
+		logger.info("onTransferComplete");
 
 		//licenseCodeLcNew = su.getHash(license)
 
-		OMMDB.hideDisabled(false);
+		db.hideDisabled(false);
 
 		saveLicenseFile(licenseFile, license);
 		String licenseCodeLcNewFile = FileUtils.getHash(licenseFile);
-		if (licensecoderm != licenseCodeLcNewFile)
-			;//logger.error("Hash code don't match. Received: " + licensecoderm + " from file: " + licenseCodeLcNewFile)
+		if (!licensecoderm.equals(licenseCodeLcNewFile))
+			logger.error("Hash code don't match. Received: " + licensecoderm + " from file: " + licenseCodeLcNewFile);
 
-		OMMDB.forseUpdatePrivBasedOnLicensing();
-
-		OMMDB.setUserReplyString("", "");
+		db.forseUpdatePrivBasedOnLicensing();
+		db.setUserReplyString("", "");
 	}
 
-	public static void onOk() {
-		//logger.info('onOk')
-		OMMDB.setUserReplyString("", "");
+	private void onOk() {
+		logger.info("onOk");
+		db.setUserReplyString("", "");
 		//done here
 	}
 
-	public static void onPossibleTransfer(String strTime, String status, String message, String messagecode) {
-		//logger.info('onPossibleTransfer')
-
-		if ("" == messagecode)
-			OMMDB.setUserReplyString(strTime + '|' + status + '|' + message, "");
-		else
-			OMMDB.setUserReplyString(strTime + '|' + status + '|' + messagecode, "");
+	private void onPossibleTransfer(String strTime, String status, String message, String messagecode) {
+		logger.info("onPossibleTransfer");
+		db.setUserReplyString(strTime + '|' + status + '|' + (messagecode.isEmpty() ? message : messagecode), "");
 	}
 
-	public static void onFailed(String productKey, String strTime, String status, String message, String messagecode) {
-		//logger.info('onFailed')
+	private void onFailed(String productKey, String strTime, String status, String message, String messagecode) {
+		logger.info("onFailed");
 
-		if(null == productKey) // no produce key means DEMO:
-			;//do nothing
-    	else	{
-    		if ("" == messagecode)
-				OMMDB.setUserReplyString(strTime + '|' + status + '|' + message, "");
-			else
-				OMMDB.setUserReplyString(strTime + '|' + status + '|' + messagecode, "");
-    	}
+		if(null != productKey && !productKey.isEmpty()) // no produce key means DEMO:
+			db.setUserReplyString(strTime + '|' + status + '|' + (messagecode.isEmpty() ? message : messagecode), "");
 	}
 
-	public static void onTransferFailed(String strTime, String status, String message, String messagecode) {
-		//logger.info('onTransferFailed')
-
-		if ("" == messagecode)
-			OMMDB.setUserReplyString(strTime + '|' + status + '|' + message, "");
-		else
-			OMMDB.setUserReplyString(strTime + '|' + status + '|' + messagecode, "");
+	private void onTransferFailed(String strTime, String status, String message, String messagecode) {
+		logger.info("onTransferFailed");
+		db.setUserReplyString(strTime + '|' + status + '|' + (messagecode.isEmpty() ? message : messagecode), "");
 	}
 
-	public static void onTransferDenied(String strTime, String status, String message, String messagecode) {
-		//logger.info('onTransferDenied')
-
-		if ("" == messagecode)
-			OMMDB.setUserReplyString(strTime + '|' + status + '|' + message, "");
-		else
-			OMMDB.setUserReplyString(strTime + '|' + status + '|' + messagecode, "");
+	private void onTransferDenied(String strTime, String status, String message, String messagecode) {
+		logger.info("onTransferDenied");
+		db.setUserReplyString(strTime + '|' + status + '|' + (messagecode.isEmpty() ? message : messagecode), "");
 	}
 
-	public static void onLicenseDisabled(String strTime, String status, String message, String messagecode, String licenseFile) {
-		//logger.info('onLicenseDisabled')
-
-		if ("" == messagecode)
-			OMMDB.setUserReplyString(strTime + '|' + status + '|' + message, "");
-		else
-			OMMDB.setUserReplyString(strTime + '|' + status + '|' + messagecode, "");
+	private void onLicenseDisabled(String strTime, String status, String message, String messagecode, String licenseFile) {
+		logger.info("onLicenseDisabled");
+		db.setUserReplyString(strTime + '|' + status + '|' + (messagecode.isEmpty() ? message : messagecode), "");
 
 		deleteLicenseFile(licenseFile);
-		OMMDB.hideDisabled(true);
+		db.hideDisabled(true);
 	}
 
-	public static void onCorrupted(String licenseFile, String strTime, String status, String message, String messagecode, String productKey, String macaddress, String strTimeStamp) {
-		//logger.info('onCorrupted')
+	private void onCorrupted(String licenseFile, String strTime, String productKey, String macaddress, String strTimeStamp) {
+		logger.info("onCorrupted");
 
 		String hash = "";
 		String request = "GET_LICENSE";
 		String data = HttpClient.getLicenseInfo(productKey, macaddress, request, hash, strTimeStamp);
-		//logger.info('FROM POST:' + data)
+		logger.info("FROM POST:" + data);
 
 		if(null == data) {
 			String str = strTime + "|FAILED_IN_POST|FAILED_IN_POST_MSG|";
-			OMMDB.reportLicenseCheck("Failed in POST", str);
+			db.reportLicenseCheck("Failed in POST", str);
 			return;
 		}
 
 		Map<String, String> map = StrUtils.parseLicenseReturn(data);
-		//logger.info('message:' + message + '; status:' + status)
 
 		if (null == map)	{
 			String str = strTime + "|FAILED_IN_POST|FAILED_IN_POST_MSG|Corrupted return from server";
-			OMMDB.reportLicenseCheck("Corrupted return from server", str);
+			db.reportLicenseCheck("Corrupted return from server", str);
 			return;
 		}
 
-		message = "";
-		messagecode = "";
-		status = "";
-		String messagestring = "", licensecoderm = "", license = "", licenselen = "", messtimestamp = "";
+		String licensecoderm, license, status, message, messagecode;
+		//String messagestring = "", licenselen = "", messtimestamp = "";
 		message = (null == map.get("message") ? "" : map.get("message"));
 		messagecode = (null == map.get("messagecode") ? "" : map.get("messagecode"));
-		messagestring = (null == map.get("messagestring") ? "" : map.get("messagestring"));
+		//messagestring = (null == map.get("messagestring") ? "" : map.get("messagestring"));
 		status = (null == map.get("status") ? "" : map.get("status"));
 		licensecoderm = (null == map.get("licensecoderm") ? "" : map.get("licensecoderm"));
 		license = (null == map.get("license") ? "" : map.get("license"));
-		licenselen = (null == map.get("licenselen") ? "" : map.get("licenselen"));
-		messtimestamp = (null == map.get("messtimestamp") ? "" : map.get("messtimestamp"));
+		//licenselen = (null == map.get("licenselen") ? "" : map.get("licenselen"));
+		//messtimestamp = (null == map.get("messtimestamp") ? "" : map.get("messtimestamp"));
+
+		logger.info("message:" + message + "; status:" + status);
 
 		String str = strTime + '|' + status + '|' + messagecode + '|' + message;
-		OMMDB.reportLicenseCheck("", str);
+		db.reportLicenseCheck("", str);
 
-		if ("LICENSE_ISSUED" == status)	{
+		if (status.equals("LICENSE_ISSUED"))	{
 			onNewLicense(licenseFile, license, licensecoderm);
 		}
 	}
@@ -279,6 +266,6 @@ public class OMServer {
 	{
 		OMServer omserver = new OMServer();
 		omserver.doLicense();
-		System.out.println(StrUtils.getGreetings());
+		System.out.println("DONE");
 	}
 }

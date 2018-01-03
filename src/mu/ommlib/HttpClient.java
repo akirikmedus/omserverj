@@ -8,19 +8,19 @@ import java.net.URLConnection;
 
 public class HttpClient
 {
-	static String testReplyNoLicense = null;
+	private static String testReplyNoLicense = null;
 		/*"msg:^License disabled|MSG_LICENSE_DISABLED\n"
 		+ "status:^LICENSE_DISABLED\n"
 		+ "dt:^20171106\n"
 		+ "<br>";*/
 
-	static String testReplyLicenseVerified = null;
+	private static String testReplyLicenseVerified = null;
 		/*"msg:^License verified|MSG_LICENSE_VERIFIED\n"
 		+ "status:^OK\n"
 		+ "dt:^20171106\n"
 		+ "<br>";*/
 
-	static String testReplyLicenseIssued = null;
+	private static String testReplyLicenseIssued = null;
 		/*"msg:^License issued|MSG_LICENSE_ISSUED\n"
 			+ "status:^LICENSE_ISSUED\n"
 			+ "licHashCode:^120e8c04b29bba99b64359adf54a5c99b738a703\n"
@@ -175,9 +175,8 @@ public class HttpClient
 
 		String url = "http://pacs-stor.com/support/licact/registrationCheck.php";
 
-		URL u = null;
 		try {
-			u = new URL(url);
+			URL u = new URL(url);
 			URLConnection conn = u.openConnection();
 			InputStream is = conn.getInputStream();
 			StringBuilder sb = new StringBuilder();
@@ -189,9 +188,9 @@ public class HttpClient
 			} while (numRead > -1);
 			return sb.toString();
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+		} catch (IOException e2) {
+			//e.printStackTrace();
 		}
 
 		return null;

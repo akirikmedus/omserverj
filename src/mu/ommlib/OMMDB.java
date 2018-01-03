@@ -2,57 +2,57 @@ package mu.ommlib;
 
 public class OMMDB
 {
-    public static String getProductKey()
+    public String getProductKey()
     {
         return "";
     }
 
-    public static String getMachineID()
+    public String getMachineID()
     {
         return "";
     }
 
-    public static String getSiteID()
+    public String getSiteID()
     {
         return "";
     }
 
-    public static boolean checkDBtables(boolean b)
+    public boolean checkDBtables(boolean b)
     {
         return true;
     }
 
-    public static String GetLicenseCheckResponse()
+    public String GetLicenseCheckResponse()
     {
         return "";
     }
 
-    public static void reportLicenseCheck(String s1, String s2)
+    public void reportLicenseCheck(String s1, String s2)
     {
 
     }
 
-    public static void setUserReplyString(String s1, String s2)
+    public void setUserReplyString(String s1, String s2)
     {
 
     }
 
-    public static void forseUpdatePrivBasedOnLicensing()
+    public void forseUpdatePrivBasedOnLicensing()
     {
 
     }
 
-    public static void hideDisabled(boolean bHide)
+    public void hideDisabled(boolean bHide)
     {
 
     }
 
-    public static void forseUpdateMaxBasedOnLicensing(String licenseFile)
+    public void forseUpdateMaxBasedOnLicensing(String licenseFile)
     {
 
     }
 
-    public static void forseUpdatePrivBasedOnLicensing(String licenseFile)
+    public void forseUpdatePrivBasedOnLicensing(String licenseFile)
     {
 
     }
