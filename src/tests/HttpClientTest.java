@@ -1,13 +1,15 @@
 package tests;
 
 import org.junit.*;
-import mu.utils.*;
+import mu.ommlib.*;
 
 public class HttpClientTest extends junit.framework.TestCase {
 
-    public void testOkay() {
-	//int nResult = HttpClient.abs(1);
-	assertEquals(1, 1);
+    public void test_getLicenseInfo() {
+        String productkey = "", mc = "", regtype = "", lichashcode = "", ts = "";
+
+        String license = HttpClient.getLicenseInfo(productkey, mc, regtype, lichashcode, ts);
+	    assertNotNull(license);
     }
    
 } 

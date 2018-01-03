@@ -41,43 +41,37 @@ public class StrUtils
 	{
 		String message = "", messagecode = "", messagestring = "", status = "", licensecoderm = "", license = "", licenselen = "", messtimestamp = "";
 
-		String[] arrOfStr = data.split("\n");
+		if(null != data) {
+			String[] arrOfStr = data.split("\n");
 
-		for (String a : arrOfStr)	{
-			if(0 == a.indexOf("msg:^"))	{
-				message = a.substring(5);
-				String[] subarrOfStr = message.split("\\|", 2);
-				messagestring = subarrOfStr[0];
-				messagecode = subarrOfStr[1];
-			}
-			else
-			if(0 == a.indexOf("status:^")) {
-				status = a.substring(8);
-			}
-			else
-			if(0 == a.indexOf("dt:^")) {
-				messtimestamp = a.substring(4);
-			}
-			else
-			if(0 == a.indexOf("licHashCode:^"))	{
-				licensecoderm = a.substring(13);
-			}
-			else
-			if(0 == a.indexOf("licCount:^"))	{
-				licenselen = a.substring(10);
-			}
-			else
-			if(0 == a.indexOf("licString:^"))	{
-				String sss = data;
-				int nIndex = sss.indexOf("licString:^");
-				if(nIndex > 0)
-					license = sss.substring(nIndex+11);
+			for (String a : arrOfStr) {
+				if (0 == a.indexOf("msg:^")) {
+					message = a.substring(5);
+					String[] subarrOfStr = message.split("\\|", 2);
+					messagestring = subarrOfStr[0];
+					messagecode = subarrOfStr[1];
+				} else if (0 == a.indexOf("status:^")) {
+					status = a.substring(8);
+				} else if (0 == a.indexOf("dt:^")) {
+					messtimestamp = a.substring(4);
+				} else if (0 == a.indexOf("t:^")) {
+					messtimestamp = a.substring(3);
+				} else if (0 == a.indexOf("licHashCode:^")) {
+					licensecoderm = a.substring(13);
+				} else if (0 == a.indexOf("licCount:^")) {
+					licenselen = a.substring(10);
+				} else if (0 == a.indexOf("licString:^")) {
+					String sss = data;
+					int nIndex = sss.indexOf("licString:^");
+					if (nIndex > 0)
+						license = sss.substring(nIndex + 11);
 
-				nIndex = license.indexOf("endOfLicString");
-				if(nIndex > 0)
-					license = license.substring(0, nIndex);
+					nIndex = license.indexOf("endOfLicString");
+					if (nIndex > 0)
+						license = license.substring(0, nIndex);
 
-				break;
+					//break;
+				}
 			}
 		}
 

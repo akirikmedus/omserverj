@@ -5,14 +5,9 @@ import mu.utils.*;
 
 public class FileUtilsTest extends junit.framework.TestCase {
 
-    public void testOkay() {
-	    int nResult = FileUtils.abs(1);
-	    assertEquals(1, nResult);
+    public void test_getHash() {
+	    String sResult = FileUtils.getHash("cf/fileutils.txt");
+	    assertEquals("8812fa2cc436af0cc2b0c372ce43a6763e57a547", sResult);
     }
-    
-    /*public void testWillFail() {
-	    int nResult = FileUtils.abs(-1);
-	    assertEquals(1, nResult);
-    }*/
-    
+
 }
