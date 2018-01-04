@@ -2,16 +2,155 @@ package mu.ommlib;
 
 import mu.utils.FileUtils;
 import mu.utils.IniFile;
+import mu.utils.Logger;
 
 import java.io.*;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Vector;
 import java.util.regex.Matcher;
 
 public class OMMDB
 {
     static private String testProductKey = "16C1-036E-19CE-03D6";
+
+    protected java.lang.Object connection;
+
+    private String dbName;
+
+    private String ipAddress;
+
+    private int port;
+
+    private String userName;
+
+    private String password;
+
+    private final String jdbcDriver = "com.sybase.jdbc.SybDriver";
+
+    private String url;
+
+    public OMMDB() {
+        IniFile props = new IniFile("cf/tm_prefs");
+
+        String ipAddress = props.getString("MedUS Manager", "localIpAddress", null);
+        String portNumber = props.getString("MedUS Manager", "localPortNumber", null);
+        String user = props.getString("MedUS Manager", "localUser", null);
+        String password = props.getString("MedUS Manager", "localPasswd", null);
+        String dbName = props.getString("MedUS Manager", "localDBName", null);
+        if(ipAddress.isEmpty()) {
+            ipAddress = props.getString("OpenMed Manager", "localIpAddress", null);
+            portNumber = props.getString("OpenMed Manager", "localPortNumber", null);
+            user = props.getString("OpenMed Manager", "localUser", null);
+            password = props.getString("OpenMed Manager", "localPasswd", null);
+            dbName = props.getString("OpenMed Manager", "localDBName", null);
+        }
+
+        if(!ipAddress.isEmpty() && !portNumber.isEmpty() && !user.isEmpty() && !password.isEmpty() && !dbName.isEmpty())
+            initDBConnection(ipAddress, (new Integer(portNumber)).intValue(), user, password, dbName);
+    }
+
+    /**
+     * Initialize the connection to the database server. It only initialize the
+     * needed information without starting the connection. Call getConnection()
+     * to actually connect to the database server.
+     */
+    private void initDBConnection(String ipAddress, int port, String userName,
+                                  String password, String dbName) {
+        this.ipAddress = ipAddress.trim();
+        this.port = port;
+        this.dbName = dbName.trim();
+        this.userName = userName.trim();
+        this.password = password.trim();
+
+        Properties sysProps = System.getProperties();
+        StringBuffer drivers = new StringBuffer(jdbcDriver);
+        String oldDrivers = sysProps.getProperty("jdbc.drivers");
+
+        //System.out.println(">>" + oldDrivers);
+        if (oldDrivers == null) {
+            sysProps.put("jdbc.drivers", drivers.toString());
+        } else if (oldDrivers.indexOf(jdbcDriver) < 0) {
+            drivers.append(":" + oldDrivers);
+            sysProps.put("jdbc.drivers", drivers.toString());
+        }
+
+        //System.out.println(">>" + sysProps.getProperty("jdbc.drivers"));
+        StringBuffer urlBuffer = new StringBuffer("jdbc:sybase:Tds");
+        urlBuffer.append(":" + this.ipAddress);
+        urlBuffer.append(":" + this.port);
+        urlBuffer.append("/" + this.dbName);
+        url = urlBuffer.toString();
+    }
+
+    private boolean connectionIsValid() {
+        try {
+            if (connection == null) {
+                return false;
+            }
+
+            if (((Connection) connection).isClosed()) {
+                return false;
+            }
+
+            Statement stmt = ((Connection) connection).createStatement();
+            ResultSet rs = stmt.executeQuery("select patient_id from patients where patient_id = '0000000000'");
+            String pid = null;
+
+            while (rs.next()) {
+                pid = rs.getString("patient_id");
+            }
+
+            stmt.close();
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+            try {
+                ((Connection) connection).close();
+            } catch (SQLException se) {
+                se.printStackTrace();
+            }
+
+            return false;
+        }
+    }
+
+    /** Initiate the connection to the database server of this site. */
+    public synchronized Object getConnection() throws Exception {
+        int retryCount = 0;
+        int maxRetry = 10;
+
+        while (true) {
+            try {
+                if (!connectionIsValid()) {
+                    //System.out.println("URL : " + url);
+                    //System.out.println("URL : " + userName);
+                    //System.out.println("URL : " + password);
+                    connection = DriverManager.getConnection(url, userName, password);
+                }
+
+                break;
+            } catch (SQLException e) {
+                if (++retryCount > maxRetry) {
+                    String s = "gave up after " + retryCount + " on connection to " + url + ": " + e.getMessage();
+                    Logger.error(s);
+                    throw new Exception(s);
+                } else {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex) {
+                    }
+                }
+            }
+        }
+
+        return connection;
+    }
+
 
     public String getProductKey()
     {
@@ -318,6 +457,25 @@ public class OMMDB
 
     private String getOneValue(String sql)
     {
+        try {
+            Connection c = (Connection) getConnection();
+            Statement stmt;
+            stmt = c.createStatement();
+            Vector sites = new Vector();
+
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                sites.addElement(rs.getString("site_id") + ":" + rs.getString("name"));
+            }
+
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return "";
     }
 
