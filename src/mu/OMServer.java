@@ -4,8 +4,12 @@ import mu.ommlib.HttpClient;
 import mu.utils.*;
 import mu.ommlib.*;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 public class OMServer {
@@ -19,8 +23,11 @@ public class OMServer {
 
 	private void doLicense()	{
 
-		String strTime = "";// = strftime("%Y%m%d%H%M",gmtime());
-		String strTimeStamp = "";// = strftime("%Y%m%d%H%M%S",gmtime());
+		Date now = new Date();
+		SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMddHHmm");
+		String strTime = sdfDate.format(now);
+		sdfDate = new SimpleDateFormat("yyyyMMddHHmmss");
+		String strTimeStamp = sdfDate.format(now);
 
 		if(!db.checkDBtables(true)) {
 			logger.error("Database check failed. Cannot continue.");
@@ -30,7 +37,8 @@ public class OMServer {
 		String licenseFile = "/opt/OMTCmm/cf/license.dat";
 		//String medusHomeDir = "/opt/OMTCmm/";
 
-		boolean bLicense = true;//os.path.isfile(licenseFile);
+		File file = new File(licenseFile);
+		boolean bLicense = file.exists();
 		boolean bDemoLicense = !bLicense;
 
 		String macaddress = db.getMachineID();
@@ -126,16 +134,13 @@ public class OMServer {
 	private void saveLicenseFile(String fileName, String license) {
 		logger.info("saving license file: " + fileName);
 		try {
-			File f = new File(fileName);
-			f.createNewFile();
+			FileWriter  fw = new FileWriter(fileName);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(license);
 		} catch (IOException e) {
 			//e.printStackTrace();
 			logger.error("Failed to save file " + fileName);
 		}
-		//f = open(fileName, 'w')
-		//f.write(license)
-		//f.close()
-
 	}
 
 	private void onNoLicense(boolean bDemoLicense, String licenseFile, String strTime, String status, String message, String messagecode) {
@@ -145,7 +150,7 @@ public class OMServer {
 
 		if (!bDemoLicense) {
 			deleteLicenseFile(licenseFile);
-			db.forseUpdatePrivBasedOnLicensing();
+			db.forseUpdatePrivBasedOnLicensing(licenseFile);
 		}
 	}
 
@@ -179,7 +184,7 @@ public class OMServer {
 		if (!licensecoderm.equals(licenseCodeLcNewFile))
 			logger.error("Hash code don't match. Received: " + licensecoderm + " from file: " + licenseCodeLcNewFile);
 
-		db.forseUpdatePrivBasedOnLicensing();
+		db.forseUpdatePrivBasedOnLicensing(licenseFile);
 		db.setUserReplyString("", "");
 	}
 

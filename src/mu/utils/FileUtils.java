@@ -24,5 +24,9 @@ public class FileUtils
 		return "";
 	}
 
+	public static String getMacAddress()
+	{
+		return "";
+	}
 }
 
