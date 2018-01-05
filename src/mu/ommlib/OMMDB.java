@@ -40,7 +40,7 @@ public class OMMDB
         String user = props.getString("MedUS Manager", "localUser", null);
         String password = props.getString("MedUS Manager", "localPasswd", null);
         String dbName = props.getString("MedUS Manager", "localDBName", null);
-        if(ipAddress.isEmpty()) {
+        if(null == ipAddress || ipAddress.isEmpty()) {
             ipAddress = props.getString("OpenMed Manager", "localIpAddress", null);
             portNumber = props.getString("OpenMed Manager", "localPortNumber", null);
             user = props.getString("OpenMed Manager", "localUser", null);

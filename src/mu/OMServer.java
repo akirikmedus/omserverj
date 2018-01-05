@@ -38,6 +38,7 @@ public class OMServer {
 		File file = new File(licenseFile);
 		boolean bLicense = file.exists();
 		boolean bDemoLicense = !bLicense;
+		Logger.info("License file " + licenseFile + (bLicense ? " exist" : " does not exist"));
 
 		String macaddress = db.getMachineID();
 		//String macaddress = db.getMachineID();
