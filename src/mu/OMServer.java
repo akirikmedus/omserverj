@@ -27,7 +27,7 @@ public class OMServer {
 		sdfDate = new SimpleDateFormat("yyyyMMddHHmmss");
 		String strTimeStamp = sdfDate.format(now);
 
-		if(!db.checkDBtables(true)) {
+		if(!db.checkDBtables()) {
 			Logger.error("Database check failed. Cannot continue.");
 			return;
 		}
