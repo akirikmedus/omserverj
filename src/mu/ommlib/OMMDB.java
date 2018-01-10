@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.regex.Matcher;
+import com.sybase.jdbc4.*;
 
 public class OMMDB
 {
@@ -122,7 +123,7 @@ public class OMMDB
     /** Initiate the connection to the database server of this site. */
     public synchronized Object getConnection() throws Exception {
         int retryCount = 0;
-        int maxRetry = 10;
+        int maxRetry = 1;
 
         while (true) {
             try {

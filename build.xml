@@ -11,7 +11,7 @@
 	    <fileset dir="${lib}" includes="**/*.jar"/>
     </path>
 
-    <path id="application" location="${jar}/${ant.project.name}.jar"/>
+    <path id="application" location="${out}/${ant.project.name}.jar"/>
 
     <target name="clean">
         <delete dir="${out}"/>
@@ -21,9 +21,15 @@
 
     <target name="compile">
         <mkdir dir="${classes}"/>
-        <javac srcdir="${src}" destdir="${classes}" classpathref="classpath"/>
+        <javac srcdir="${src}" destdir="${classes}" classpathref="classpath">
+	 <classpath>
+            <pathelement location="${lib}/jconn4.jar"/>
+            <pathelement path="${lib}"/>
+        </classpath>
+	</javac>
     </target>
-										    <target name="jar" depends="compile">
+
+    <target name="jar" depends="compile">
         <mkdir dir="${out}"/>
         <jar destfile="${out}/${ant.project.name}.jar" basedir="${classes}">
             <manifest>
@@ -33,7 +39,12 @@
     </target>
 
     <target name="run" depends="jar">
-        <java jar="${out}/${ant.project.name}.jar" fork="true"/>
+	    <java classname="${main-class}" fork="true">
+        <classpath>
+		<pathelement location="${out}/${ant.project.name}.jar"/>
+        	<pathelement location="${lib}/jconn4.jar"/>
+        </classpath>
+        </java>
     </target>
 
     <target name="clean-build" depends="clean,jar"/>
@@ -43,8 +54,8 @@
         <junit printsummary="yes">
             <classpath>
                 <path refid="classpath"/>
-		<path refid="application"/>
-		<path location="${out}/${ant.project.name}.jar"/>
+		        <path refid="application"/>
+		        <path location="${out}/${ant.project.name}.jar"/>
             </classpath>
 
 	    <formatter type="xml"/>
