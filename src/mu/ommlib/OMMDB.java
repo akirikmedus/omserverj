@@ -295,8 +295,12 @@ public class OMMDB
             }
             if (bEveryoneCheck) {
                 sql = "SELECT group_name FROM groups WHERE group_name = 'everyone'";
-                if (stmt2.executeUpdate(sql) < 1) {
-                    sql = "insert into groups (group_name) values ('everyone', '')";
+                ResultSet rs3 = stmt2.executeQuery(sql);
+                String s = null;
+                if(rs3.first())
+                    s = rs3.getString(1);
+                if (null == s || s.isEmpty()) {
+                    sql = "INSERT INTO groups (group_name) VALUES ('everyone', '')";
                     stmt2.executeUpdate(sql);
                 }
             }
@@ -326,25 +330,75 @@ public class OMMDB
                 bAdminCheck = true;
             }
             if (bAdminCheck) {
-                sql = "select user_id from users where user_id = 'admin'";
-                if (stmt2.executeUpdate(sql) < 1) {
-                    sql = "insert into users (user_id, name, last_name, first_name, password) values ('admin', 'PACSimple Admin', 'Admin', 'PACSimple', 'admin!')";
+                sql = "SELECT user_id FROM users WHERE user_id = 'admin'";
+                ResultSet rs3 = stmt2.executeQuery(sql);
+                String s = null;
+                if(rs3.first())
+                    s = rs3.getString(1);
+                if (null == s || s.isEmpty()) {
+                    sql = "INSERT INTO users (user_id, name, last_name, first_name, password) VALUES ('admin', 'PACSimple Admin', 'Admin', 'PACSimple', 'admin!')";
                     stmt2.executeUpdate(sql);
                 }
 
-                /*sql = "select privilege from user_privileges where user_id = 'admin' and privilege = 'omadmin_run'"
-                ResultSet rs2 = stmt2.executeQuery(sql);
-                if(rs.first())
-                    s = rs.getString(1);
-                if (true) {
-                    stmt2.execute("select description from user_privileges where privilege = 'omadmin_run'")
-                    sql = "delete from user_privileges where privilege = 'omadmin_run' and availability = 1"
+                sql = "select privilege from user_privileges where user_id = 'admin' and privilege = 'omadmin_run'";
+                rs3 = stmt2.executeQuery(sql);
+                s = null;
+                if(rs3.first())
+                    s = rs3.getString(1);
+                if (null == s || s.isEmpty())
+                {
+                    stmt2.execute("SELECT description FROM user_privileges WHERE privilege = 'omadmin_run'");
+                    rs3 = stmt2.executeQuery(sql);
+                    String sDescription = null;
+                    if(rs3.first())
+                        sDescription = rs3.getString(1);
+
+                    sql = "DELETE FROM user_privileges WHERE privilege = 'omadmin_run' AND availability = 1";
                     stmt2.executeUpdate(sql);
-                    data = c.fetchall()
-                    sDescription = data[0][0]
-                    sql = "insert into user_privileges (privilege, availability, group_id, user_id, description) values ('omadmin_run', 0, '', 'admin', '" + sDescription + "')"
+
+                    sql = "INSERT INTO user_privileges (privilege, availability, group_id, user_id, description) VALUES ('omadmin_run', 0, '', 'admin', '" + sDescription + "')";
                     stmt2.executeUpdate(sql);
-                }*/
+                }
+
+                sql = "select privilege from user_privileges where user_id = 'admin' and privilege = 'omacm_admin'";
+                rs3 = stmt2.executeQuery(sql);
+                s = null;
+                if(rs3.first())
+                    s = rs3.getString(1);
+                if (null == s || s.isEmpty())
+                {
+                    stmt2.execute("SELECT description FROM user_privileges WHERE privilege = 'omacm_admin'");
+                    rs3 = stmt2.executeQuery(sql);
+                    String sDescription = null;
+                    if(rs3.first())
+                        sDescription = rs3.getString(1);
+
+                    sql = "DELETE FROM user_privileges WHERE privilege = 'omacm_admin' AND availability = 1";
+                    stmt2.executeUpdate(sql);
+
+                    sql = "INSERT INTO user_privileges (privilege, availability, group_id, user_id, description) VALUES ('omacm_admin', 0, '', 'admin', '" + sDescription + "')";
+                    stmt2.executeUpdate(sql);
+                }
+
+                sql = "select privilege from user_privileges where user_id = 'admin' and privilege = 'omacm_add_priv'";
+                rs3 = stmt2.executeQuery(sql);
+                s = null;
+                if(rs3.first())
+                    s = rs3.getString(1);
+                if (null == s || s.isEmpty())
+                {
+                    stmt2.execute("SELECT description FROM user_privileges WHERE privilege = 'omacm_add_priv'");
+                    rs3 = stmt2.executeQuery(sql);
+                    String sDescription = null;
+                    if(rs3.first())
+                        sDescription = rs3.getString(1);
+
+                    sql = "DELETE FROM user_privileges WHERE privilege = 'omacm_add_priv' AND availability = 1";
+                    stmt2.executeUpdate(sql);
+
+                    sql = "INSERT INTO user_privileges (privilege, availability, group_id, user_id, description) VALUES ('omacm_add_priv', 0, '', 'admin', '" + sDescription + "')";
+                    stmt2.executeUpdate(sql);
+                }
             }
             stmt2.close();
             rs.close();
@@ -353,46 +407,6 @@ public class OMMDB
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-    /*
-
-    sql = "select privilege from user_privileges where user_id = 'admin' and privilege = 'omadmin_run'"
-        c.execute(sql)
-    data = c.fetchall()
-        if (data[0][0] != ""):
-        c.execute("select description from user_privileges where privilege = 'omadmin_run'")
-    sql = "delete from user_privileges where privilege = 'omadmin_run' and availability = 1"
-        c.execute(sql)
-    data = c.fetchall()
-    sDescription = data[0][0]
-    sql = "insert into user_privileges (privilege, availability, group_id, user_id, description) values ('omadmin_run', 0, '', 'admin', '" + sDescription + "')"
-        c.execute(sql)
-
-    sql = "select privilege from user_privileges where user_id = 'admin' and privilege = 'omacm_admin'"
-        c.execute(sql)
-    data = c.fetchall()
-        if (data[0][0] != ""):
-        c.execute("select description from user_privileges where privilege = 'omacm_admin'")
-    sql = "delete from user_privileges where privilege = 'omacm_admin' and availability = 1"
-        c.execute(sql)
-    data = c.fetchall()
-    sDescription = data[0][0]
-    sql = "insert into user_privileges (privilege, availability, group_id, user_id, description) values ('omacm_admin', 0, '', 'admin', '" + sDescription + "')"
-        c.execute(sql)
-
-    sql = "select privilege from user_privileges where user_id = 'admin' and privilege = 'omacm_add_priv'"
-        c.execute(sql)
-    data = c.fetchall()
-        if (data[0][0] != ""):
-        c.execute("select description from user_privileges where privilege = 'omacm_add_priv'")
-    sql = "delete from user_privileges where privilege = 'omacm_add_priv' and availability = 1"
-        c.execute(sql)
-    data = c.fetchall()
-    sDescription = data[0][0]
-    sql = "insert into user_privileges (privilege, availability, group_id, user_id, description) values ('omacm_add_priv', 0, '', 'admin', '" + sDescription + "')"
-        c.execute(sql)
-
-    */
     }
 
     public void hideDisabled(boolean disabled)
