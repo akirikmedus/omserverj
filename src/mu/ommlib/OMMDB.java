@@ -152,6 +152,7 @@ public class OMMDB
     {
         // sudo dmidecode | grep -i uuid
         return FileUtils.getMacAddress();
+        //return "55ffb06c-559d-4e08-b5ec-6bd3b9541755";
     }
 
     public String getSiteID()
@@ -469,6 +470,7 @@ public class OMMDB
 
     private String getOneValue(String sql)
     {
+        Logger.info("DB::getOneValue. SQL="+sql);
         String s = "";
         try {
             Connection c = (Connection) getConnection();
@@ -494,6 +496,7 @@ public class OMMDB
 
     public int executeUpdate(String sql)
     {
+        Logger.info("DB::executeUpdate. SQL="+sql);
         int n = -1;
         try {
             Connection c = (Connection) getConnection();

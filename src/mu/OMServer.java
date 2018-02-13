@@ -34,7 +34,7 @@ public class OMServer {
 			service.scheduleAtFixedRate(task, delay, interval, TimeUnit.MILLISECONDS);
 
 		//start listener service
-			MUService.startWorking();
+			//MUService.startWorking();
 
 		while(true)
 		{

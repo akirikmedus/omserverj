@@ -72,14 +72,15 @@ public class Licensing extends Thread
 
         String request;
         String response = db.GetLicenseCheckResponse(); //TRANSFER or HARDWARE_CHANGE
-        if(null != response)
-            request = response;
-        else
+        //if(null != response && !response.isEmpty())
+        //    request = response;
+        //else
         if (bDemoLicense)
             request = "GET_LICENSE";
         else
             request = "VERIFY";
 
+        Logger.info("Request:" + request);
         String data = HttpClient.getLicenseInfo(productKey,macaddress,request,hash,strTimeStamp);
         Logger.info("FROM POST:" + data);
 

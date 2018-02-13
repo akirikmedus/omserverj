@@ -33,13 +33,13 @@ public class MUService extends Thread
             catch (IOException e)
             {
                 System.err.println("Accept failed.");
-                System.exit(1);
+                //System.exit(1);
             }
         }
         catch (IOException e)
         {
             System.err.println("Could not listen on port: 10008.");
-            System.exit(1);
+            //System.exit(1);
         }
         finally
         {
@@ -49,7 +49,7 @@ public class MUService extends Thread
             catch (IOException e)
             {
                 System.err.println("Could not close port: 10008.");
-                System.exit(1);
+                //System.exit(1);
             }
         }
     }
@@ -116,7 +116,7 @@ public class MUService extends Thread
         catch (IOException e)
         {
             System.err.println("Problem with Communication Server");
-            System.exit(1);
+            //System.exit(1);
         }
     }
 }

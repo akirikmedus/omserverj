@@ -1,7 +1,11 @@
 package mu.ommlib;
 
+import mu.utils.Logger;
+
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -169,15 +173,29 @@ public class HttpClient
 
 	public static String getLicenseInfo(String productkey, String mc, String regtype, String lichashcode, String ts)
 	{
-		if(null != testReplyNoLicense) 			return testReplyNoLicense;
-		if(null != testReplyLicenseVerified) 	return testReplyLicenseVerified;
-		if(null != testReplyLicenseIssued) 		return testReplyLicenseIssued;
+		//if(null != testReplyNoLicense) 			return testReplyNoLicense;
+		//if(null != testReplyLicenseVerified) 	return testReplyLicenseVerified;
+		//if(null != testReplyLicenseIssued) 		return testReplyLicenseIssued;
 
 		String url = "http://pacs-stor.com/support/licact/registrationCheck.php";
 
+		String params =   "productKey=" + productkey
+						+ "&mc=" + mc
+						+ "&reqtype=" + regtype        // 'VERIFY', #'GET_LICENSE'
+						+ "&licHashCode=" + lichashcode
+						+ "&ts=" + ts;
+
+		Logger.info("HTTP Requst. URL="+url+"; Params="+params);
+
 		try {
 			URL u = new URL(url);
-			URLConnection conn = u.openConnection();
+			HttpURLConnection conn = (HttpURLConnection)u.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setDoOutput(true);
+			DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+			out.writeBytes(params);
+			out.flush();
+			out.close();
 			InputStream is = conn.getInputStream();
 			StringBuilder sb = new StringBuilder();
 			int numRead;
