@@ -151,6 +151,8 @@ public class Licensing extends Thread
             FileWriter fw = new FileWriter(fileName);
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(license);
+            bw.flush();
+            bw.close();
         } catch (IOException e) {
             //e.printStackTrace();
             Logger.error("Failed to save file " + fileName);
@@ -176,7 +178,7 @@ public class Licensing extends Thread
 
         saveLicenseFile(licenseFile, license);
         String licenseCodeLcNewFile = FileUtils.getHash(licenseFile);
-        if (!licensecoderm.equals(licenseCodeLcNewFile))
+        if (!licensecoderm.equalsIgnoreCase(licenseCodeLcNewFile))
             Logger.error("Hash code don't match. Received: " + licensecoderm + " from file: " + licenseCodeLcNewFile);
 
         db.setUserReplyString("", "");

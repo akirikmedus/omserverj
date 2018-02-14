@@ -185,17 +185,21 @@ public class HttpClient
 						+ "&licHashCode=" + lichashcode
 						+ "&ts=" + ts;
 
-		Logger.info("HTTP Requst. URL="+url+"; Params="+params);
+		url += "?";
+		url += params;
+
+		Logger.info("HTTP Requst. URL="+url/*+"; Params="+params*/);
 
 		try {
 			URL u = new URL(url);
 			HttpURLConnection conn = (HttpURLConnection)u.openConnection();
 			conn.setRequestMethod("GET");
-			conn.setDoOutput(true);
-			DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-			out.writeBytes(params);
-			out.flush();
-			out.close();
+			//conn.setDoInput(true);
+			//conn.setDoOutput(true);
+			//DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+			//out.writeBytes(params);
+			//out.flush();
+			//out.close();
 			InputStream is = conn.getInputStream();
 			StringBuilder sb = new StringBuilder();
 			int numRead;

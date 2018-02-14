@@ -180,6 +180,63 @@ public class OMMDB
             executeUpdate(sql);
             Logger.error("Failed");
         }
+
+        okay = false;
+        try {
+            Connection c = (Connection) getConnection();
+            Statement stmt = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+            ResultSet rs = stmt.executeQuery("SELECT user_id FROM user_privileges");
+            okay = null != rs;
+            stmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (!okay) {
+            String sql = "create table user_privileges (privilege varchar(30) not null, availability int not null, group_id varchar(30) null, user_id varchar(30) null, description varchar(128) null )";
+            executeUpdate(sql);
+            Logger.error("Failed");
+        }
+
+        okay = false;
+        try {
+            Connection c = (Connection) getConnection();
+            Statement stmt = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+            ResultSet rs = stmt.executeQuery("SELECT indx FROM user_privileges_lc");
+            okay = null != rs;
+            stmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (!okay) {
+            String sql = "create table user_privileges_lc (indx int not null, privilege varchar(30) not null, description varchar(128) null, licensed int not null )";
+            executeUpdate(sql);
+            Logger.error("Failed");
+        }
+
+        okay = false;
+        try {
+            Connection c = (Connection) getConnection();
+            Statement stmt = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+            ResultSet rs = stmt.executeQuery("SELECT * FROM groups");
+            okay = null != rs;
+            stmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (!okay) {
+            String sql = "create table groups (group_name varchar(30) not null, user_id varchar(30) null )";
+            executeUpdate(sql);
+            sql = "insert into groups (group_name, user_id) values ('everyone', '')";
+            executeUpdate(sql);
+            Logger.error("Failed");
+        }
+
         return true;
     }
 
