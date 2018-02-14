@@ -268,7 +268,7 @@ public class OMMDB
             executeUpdate(sql);
         }
 
-        sql = "UPDATE tm_prefs SET value ='" + response + "' WHERE name = 'LCS' AND param = 'response'";
+        sql = "UPDATE tm_prefs SET value = '" + response + "' WHERE name = 'LCS' AND param = 'response'";
         if (executeUpdate(sql) < 1) {
             sql = "INSERT INTO tm_prefs values ('LCS', 'response', '" + response + "')";
             executeUpdate(sql);
@@ -294,11 +294,12 @@ public class OMMDB
                 if(line.equals("[PRIVILEGES]"))
                     bInPrivs = true;
 
-                if (bInPrivs)
-                {
+                if (bInPrivs)   {
                     String[] s = line.split("=");
-                    sql = "UPDATE user_privileges_lc set licensed = 1 where privilege = '" + s[0] + "'";
-                    executeUpdate(sql);
+                    if(s.length > 1) {
+                        sql = "UPDATE user_privileges_lc set licensed = 1 where privilege = '" + s[0] + "'";
+                        executeUpdate(sql);
+                    }
                 }
             }
 
@@ -486,8 +487,7 @@ public class OMMDB
     {
         Logger.info("forseUpdateMaxBasedOnLicensing");
 
-        IniFile config = new IniFile();
-        config.loadFromString(licenseFile);
+        IniFile config = new IniFile(licenseFile);
 
         String sss = config.getString("CAPACITY", "PACSMaxImageCount", "");
         String sql = "UPDATE tm_prefs SET value ='" + sss + "' WHERE name = 'GLOBAL' AND param = 'pic'";

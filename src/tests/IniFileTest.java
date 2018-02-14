@@ -2,6 +2,8 @@ package tests;
 
 import mu.utils.IniFile;
 
+import java.io.File;
+
 public class IniFileTest extends junit.framework.TestCase {
 
     public void testOkay() {
@@ -66,6 +68,18 @@ public class IniFileTest extends junit.framework.TestCase {
             String s = config.getString("CAPACITY", "PACSMaxImageCount", "");
             assertEquals("", s);
 
+        }//=============================================================================================================
+
+        {//=============================================================================================================
+            String licenseFile = "/opt/OMTCmm/cf/license.dat";
+            File file = new File(licenseFile);
+            boolean bLicense = file.exists();
+            if(bLicense)    {
+                IniFile config = new IniFile(licenseFile);
+                String s = config.getString("CAPACITY", "PACSMaxImageCount", "");
+                assertNotNull(s);
+                assertNotSame("", s);
+            }
         }//=============================================================================================================
     }
 }

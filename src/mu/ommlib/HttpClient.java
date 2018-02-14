@@ -24,8 +24,8 @@ public class HttpClient
 		+ "dt:^20171106\n"
 		+ "<br>";*/
 
-	private static String testReplyLicenseIssued = null;
-		/*"msg:^License issued|MSG_LICENSE_ISSUED\n"
+	private static String testReplyLicenseIssued =
+		"msg:^License issued|MSG_LICENSE_ISSUED\n"
 			+ "status:^LICENSE_ISSUED\n"
 			+ "licHashCode:^120e8c04b29bba99b64359adf54a5c99b738a703\n"
 			+ "licCount:^5494\n"
@@ -168,14 +168,14 @@ public class HttpClient
 			+ "omv_dicom_print=8C61A57DC5A39CCCBD7C682ABF5E69A5DC78B88B\n"
 			+ "omv_multi_monitor=7CDB99AA55CE765A3F1969644E77A4808F6A63DA\n"
 			+ "omusl_radviewer=1AAAB0413A817535B0D408A3BEBC6097477C967BendOfLicString\n"
-			+ "t:^20171030";*/
+			+ "t:^20171030";
 
 
 	public static String getLicenseInfo(String productkey, String mc, String regtype, String lichashcode, String ts)
 	{
-		//if(null != testReplyNoLicense) 			return testReplyNoLicense;
-		//if(null != testReplyLicenseVerified) 	return testReplyLicenseVerified;
-		//if(null != testReplyLicenseIssued) 		return testReplyLicenseIssued;
+		if(testReplyNoLicense != null) 			return testReplyNoLicense;
+		if(testReplyLicenseVerified != null) 	return testReplyLicenseVerified;
+		if(testReplyLicenseIssued != null) 		return testReplyLicenseIssued;
 
 		String url = "http://pacs-stor.com/support/licact/registrationCheck.php";
 
