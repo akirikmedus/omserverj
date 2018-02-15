@@ -41,11 +41,6 @@ public class Licensing extends Thread
         sdfDate = new SimpleDateFormat("yyyyMMddHHmmss");
         String strTimeStamp = sdfDate.format(now);
 
-        if(!db.checkDBtables()) {
-            Logger.error("Database check failed. Cannot continue.");
-            return;
-        }
-
         String licenseFile = "/opt/OMTCmm/cf/license.dat";
         //String medusHomeDir = "/opt/OMTCmm/";
 

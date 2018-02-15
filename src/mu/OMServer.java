@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import mu.ommlib.OMMDB;
 import mu.utils.*;
 
 public class OMServer {
@@ -20,6 +21,12 @@ public class OMServer {
 
 	private void startWorking()
 	{
+		OMMDB db = new OMMDB();
+		if(!db.checkDBtables()) {
+			Logger.error("Database check failed. Cannot continue.");
+			return;
+		}
+
 		//start licensing task
 			long delay = 10 * 1000;//10 seconds
 			long interval = 30 * 60 * 1000;//30 minutes

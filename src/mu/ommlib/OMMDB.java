@@ -237,6 +237,46 @@ public class OMMDB
             Logger.error("Failed");
         }
 
+        CheckPrivilegesRecord("omacm_add_priv", INSERT_LINE_ADMIN, "", 1);
+        CheckPrivilegesRecord("omacm_admin", INSERT_LINE_ADMIN, "", 2);
+
+        updatePrivBasedOnLicensing();
+
+        return true;
+    }
+
+    private final String INSERT_LINE_ADMIN =  ", 0, '', 'admin'";
+    private final String INSERT_LINE_EVERYONE =  ", 0, 'everyone', ''";
+
+    public boolean CheckPrivilegesRecord(String privName, String insertParam, String description, int index)    {
+        try {
+            Connection c = (Connection) getConnection();
+            Statement stmt = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = stmt.executeQuery("SELECT privilege FROM user_privileges WHERE privilege = '" + privName + "'");
+            if(!rs.first()) {
+                String sql = "INSERT INTO user_privileges (privilege, availability, group_id, user_id, description)";
+                sql += " values ('" + privName + "'" + insertParam + ", '" + description + "')";
+                executeUpdate(sql);
+            }
+            stmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Connection c = (Connection) getConnection();
+            Statement stmt = c.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = stmt.executeQuery("SELECT privilege FROM user_privileges_lc WHERE privilege = '" + privName + "'");
+            if(!rs.first()) {
+                String sql = "INSERT INTO user_privileges_lc (indx, privilege, description, licensed)";
+                sql += " values (" + Integer.toString(index) + ", '" + privName + "', '" + description + "', 1)";
+                executeUpdate(sql);
+            }
+            stmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return true;
     }
 
