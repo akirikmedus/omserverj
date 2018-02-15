@@ -9,7 +9,7 @@ public class StrUtilsTest extends junit.framework.TestCase {
 
     public void test_getHash() {
 	    String shash = StrUtils.getHash("The quick brown fox jumps over the lazy dog");
-	    assertEquals("2fd4e1c67a2d28fced849ee1bb76e7391b93eb12", shash);
+	    assertEquals("2FD4E1C67A2D28FCED849EE1BB76E7391B93EB12", shash);
     }
 
     public void test_parseLicenseReturn()   {

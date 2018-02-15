@@ -10,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -32,8 +33,7 @@ public class Licensing extends Thread
         } while(m_bRun);
     }
 
-    public void doLicense()
-    {
+    public void doLicense() {
 
         Date now = new Date();
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMddHHmm");

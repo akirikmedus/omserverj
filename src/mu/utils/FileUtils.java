@@ -2,25 +2,52 @@ package mu.utils;
 
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 
 public class FileUtils
 {
-	public static String getHash(String fileName)
-	{
+	public static String getHash(String fileName) {
 		try {
-			InputStream is = new FileInputStream(fileName);
+			MessageDigest md = MessageDigest.getInstance("SHA-1");
+			FileInputStream fis = new FileInputStream(fileName);
+
+			byte[] dataBytes = new byte[1024];
+
+			int nread = 0;
+			while ((nread = fis.read(dataBytes)) != -1) {
+				md.update(dataBytes, 0, nread);
+			};
+			byte[] mdbytes = md.digest();
+
+			//convert the byte to hex format method 1
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < mdbytes.length; i++) {
+				sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+			}
+
+			return sb.toString().toUpperCase();
+
+			//String fileAsString = new String(Files.readAllBytes(Paths.get(fileName)));
+
+			/*InputStream is = new FileInputStream(fileName);
 			BufferedReader buf = new BufferedReader(new InputStreamReader(is));
 			String line = buf.readLine();
 			StringBuilder sb = new StringBuilder();
 			while(line != null){
 				sb.append(line);
 				line = buf.readLine();
-				if(line != null) sb.append("\n");
+				if(line != null) sb.append("\r\n");
 			}
-			String fileAsString = sb.toString();
-			return StrUtils.getHash(fileAsString);
+			String fileAsString = sb.toString();*/
+
+			//return StrUtils.getHash(fileAsString);
 		} catch (IOException e) {
+			//e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
 			//e.printStackTrace();
 		}
 		return "";

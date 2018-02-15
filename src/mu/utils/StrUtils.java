@@ -13,14 +13,12 @@ public class StrUtils
 		MessageDigest md;
 		try {
 			md = MessageDigest.getInstance("SHA-1");
-			return byteArrayToHexString(md.digest(str.getBytes("UTF-8")));
+			return byteArrayToHexString(md.digest(str.getBytes())).toUpperCase();
 		}
 		catch(NoSuchAlgorithmException e) {
 			//e.printStackTrace();
 		}
-		catch (UnsupportedEncodingException e2) {
-			//e2.printStackTrace();
-		}
+
 		return "";
 	}
 
