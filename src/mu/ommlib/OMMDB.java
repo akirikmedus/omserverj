@@ -237,16 +237,55 @@ public class OMMDB
             Logger.error("Failed");
         }
 
-        CheckPrivilegesRecord("omacm_add_priv", INSERT_LINE_ADMIN, "", 1);
-        CheckPrivilegesRecord("omacm_admin", INSERT_LINE_ADMIN, "", 2);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_USM_ADD,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_USM_ADD,				1);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_USM_ADMIN,			INSERT_LINE_ADMIN, PRIVILEGE_DESCR_USM_ADMIN,			2);
 
-        updatePrivBasedOnLicensing();
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_CC,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_CC,				3);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_CONS,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_CONS,			4);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_DB,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_DB,				5);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_DICT,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_DICT,			6);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_DISTR,			INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_DISTR,			7);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_ERPR,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_ERPR,			8);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_FILES,			INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_FILES,			9);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_FLEX,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_FLEX,			10);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_HP,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_HP,				11);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_KDS,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_KDS,				12);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_PUSH,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_PUSH,			13);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_RUN,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_RUN,				14);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMA_UTILS,			INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMA_UTILS,			15);
+
+        CheckPrivilegesRecord(PRIVILEGE_NAME_DICTIONARY_ADD,		INSERT_LINE_ADMIN, PRIVILEGE_DESCR_DICTIONARY_ADD,		16);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_STM_WORK_WITH,		INSERT_LINE_ADMIN, PRIVILEGE_DESCR_STM_WORK_WITH,		17);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_STM_RUN,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_STM_RUN,				18);
+
+        CheckPrivilegesRecord(PRIVILEGE_NAME_USL_MANAGE_PATIENTS,	INSERT_LINE_ADMIN, PRIVILEGE_DESCR_USL_MANAGE_PATIENTS,	19);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_USL_MANAGE_STUDIES,	INSERT_LINE_ADMIN, PRIVILEGE_DESCR_USL_MANAGE_STUDIES,	20);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_USL_PROFILE,			INSERT_LINE_ADMIN, PRIVILEGE_DESCR_USL_PROFILE,			21);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_USL_PUSH_MONITOR,		INSERT_LINE_ADMIN, PRIVILEGE_DESCR_USL_PUSH_MONITOR,	22);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_USL_RUN,				INSERT_LINE_EVERYONE, PRIVILEGE_DESCR_USL_RUN,			23);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_USL_STUDY_STATUS,		INSERT_LINE_ADMIN, PRIVILEGE_DESCR_USL_STUDY_STATUS,	24);
+
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMV_ADD_REPORT,		INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMV_ADD_REPORT,		25);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMV_EDIT_REPORT,		INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMV_EDIT_REPORT,		26);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMV_EMAIL,			INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMV_EMAIL,			27);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMV_PUSH,				INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMV_PUSH,			28);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMV_SAVE_ANNO,		INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMV_SAVE_ANNO,		29);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMV_SEARCH,			INSERT_LINE_EVERYONE, PRIVILEGE_DESCR_OMV_SEARCH,		30);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMV_SHOW_ANNO,		INSERT_LINE_EVERYONE, PRIVILEGE_DESCR_OMV_SHOW_ANNO,	31);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMV_VIEW,				INSERT_LINE_EVERYONE, PRIVILEGE_DESCR_OMV_VIEW,			32);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMV_VITREA,			INSERT_LINE_ADMIN, PRIVILEGE_DESCR_OMV_VITREA,			33);
+
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMX_MULTY,			INSERT_LINE_EVERYONE, PRIVILEGE_DESCR_OMX_MULTY,		34);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_OMX_RUN,				INSERT_LINE_EVERYONE, PRIVILEGE_DESCR_OMX_RUN,			35);
+
+        CheckPrivilegesRecord(PRIVILEGE_NAME_ALLPRO_IMAGES,		INSERT_LINE_EVERYONE, PRIVILEGE_DESCR_ALLPRO_IMAGES,	36);
+        CheckPrivilegesRecord(PRIVILEGE_NAME_AUTOUPDATE_RUN,		INSERT_LINE_EVERYONE, PRIVILEGE_DESCR_AUTOUPDATE_RUN,	37);
+
+        //updatePrivBasedOnLicensing();
 
         return true;
     }
 
-    private final String INSERT_LINE_ADMIN =  ", 0, '', 'admin'";
-    private final String INSERT_LINE_EVERYONE =  ", 0, 'everyone', ''";
 
     public boolean CheckPrivilegesRecord(String privName, String insertParam, String description, int index)    {
         try {
@@ -608,4 +647,118 @@ public class OMMDB
 
         return n;
     }
+
+    private final String MANAGE_MODALITIES_USER				= "om_mod_man";
+    private final String PRIVILEGE_NAME_DICTIONARY_ADD		= "omsdm_power_on";
+    private final String PRIVILEGE_DESCR_DICTIONARY_ADD		= "add/delete dictionary entrees";
+
+    private final String PRIVILEGE_NAME_USM_ADMIN			= "omacm_admin";
+    private final String PRIVILEGE_DESCR_USM_ADMIN			= "manage users/groups/privileges";
+    private final String PRIVILEGE_NAME_USM_ADD				= "omacm_add_priv";
+    private final String PRIVILEGE_DESCR_USM_ADD				= "add new privileges to the database";
+
+    private final String PRIVILEGE_NAME_STM_WORK_WITH		= "omstm_admin";
+    private final String PRIVILEGE_DESCR_STM_WORK_WITH		= "reconcile(create/delete/update) patients";
+    private final String PRIVILEGE_NAME_STM_RUN				= "omstm_run";
+    private final String PRIVILEGE_DESCR_STM_RUN				= "run application";
+
+    private final String PRIVILEGE_NAME_OMV_SEARCH			= "omv_search";
+    private final String PRIVILEGE_DESCR_OMV_SEARCH			= "do search";
+    private final String PRIVILEGE_NAME_OMV_VIEW				= "omv_view";
+    private final String PRIVILEGE_DESCR_OMV_VIEW			= "view images";
+    private final String PRIVILEGE_NAME_OMV_EMAIL			= "omv_email";
+    private final String PRIVILEGE_DESCR_OMV_EMAIL			= "send e-mail referral";
+    private final String PRIVILEGE_NAME_OMV_PUSH				= "omv_push";
+    private final String PRIVILEGE_DESCR_OMV_PUSH			= "push studies";
+    private final String PRIVILEGE_NAME_OMV_SHOW_ANNO		= "omv_show_anno";
+    private final String PRIVILEGE_DESCR_OMV_SHOW_ANNO		= "view/create annotations";
+    private final String PRIVILEGE_NAME_OMV_SAVE_ANNO		= "omv_save_anno";
+    private final String PRIVILEGE_DESCR_OMV_SAVE_ANNO		= "save annotations";
+    private final String PRIVILEGE_NAME_OMV_VITREA			= "omv_vitrea";
+    private final String PRIVILEGE_DESCR_OMV_VITREA			= "run Vitrea";
+    private final String PRIVILEGE_NAME_OMV_ADD_REPORT		= "omv_add_report";
+    private final String PRIVILEGE_DESCR_OMV_ADD_REPORT		= "add study reports";
+    private final String PRIVILEGE_NAME_OMV_EDIT_REPORT		= "omv_edit_report";
+    private final String PRIVILEGE_DESCR_OMV_EDIT_REPORT		= "edit study reports";
+
+    private final String PRIVILEGE_NAME_OMX_MULTY			= "omx_multy";
+    private final String PRIVILEGE_DESCR_OMX_MULTY			= "create multiple patients per CD";
+    private final String PRIVILEGE_NAME_OMX_RUN				= "omx_run";
+    private final String PRIVILEGE_DESCR_OMX_RUN				= "run application";
+
+    private final String PRIVILEGE_NAME_OMA_RUN				= "omadmin_run";
+    private final String PRIVILEGE_DESCR_OMA_RUN				= "run application";
+    private final String PRIVILEGE_NAME_OMA_CC				= "omadmin_cc";
+    private final String PRIVILEGE_DESCR_OMA_CC				= "do consistency check";
+    private final String PRIVILEGE_NAME_OMA_UTILS			= "omadmin_utils";
+    private final String PRIVILEGE_DESCR_OMA_UTILS			= "work with admin utilities";
+    private final String PRIVILEGE_NAME_OMA_DB				= "omadmin_db_check";
+    private final String PRIVILEGE_DESCR_OMA_DB				= "check database for consistency";
+    private final String PRIVILEGE_NAME_OMA_FILES			= "omadmin_file_audit";
+    private final String PRIVILEGE_DESCR_OMA_FILES			= "run file audit";
+    private final String PRIVILEGE_NAME_OMA_DICT				= "omadmin_dict";
+    private final String PRIVILEGE_DESCR_OMA_DICT			= "work with study type dictionary";
+    private final String PRIVILEGE_NAME_OMA_HP				= "omadmin_hp";
+    private final String PRIVILEGE_DESCR_OMA_HP				= "work with hanging protocols";
+    private final String PRIVILEGE_NAME_OMA_PUSH				= "omadmin_push";
+    private final String PRIVILEGE_DESCR_OMA_PUSH			= "work with push destinations";
+    private final String PRIVILEGE_NAME_OMA_DISTR			= "omadmin_distr";
+    private final String PRIVILEGE_DESCR_OMA_DISTR			= "work with distribution list";
+    private final String PRIVILEGE_NAME_OMA_CONS				= "omadmin_console";
+    private final String PRIVILEGE_DESCR_OMA_CONS			= "work with dashboard";
+    private final String PRIVILEGE_NAME_OMA_FLEX				= "omadmin_flex";
+    private final String PRIVILEGE_DESCR_OMA_FLEX			= "work with flexstorage";
+    private final String PRIVILEGE_NAME_OMA_ERPR				= "omadmin_erpr";
+    private final String PRIVILEGE_DESCR_OMA_ERPR			= "work with erpr";
+    private final String PRIVILEGE_NAME_OMA_KDS				= "omadmin_kds";
+    private final String PRIVILEGE_DESCR_OMA_KDS				= "work with KDS";
+
+    private final String PRIVILEGE_NAME_USL_RUN				= "omusl_run";
+    private final String PRIVILEGE_DESCR_USL_RUN				= "run universal study list";
+    private final String PRIVILEGE_NAME_USL_PROFILE			= "omusl_profile";
+    private final String PRIVILEGE_DESCR_USL_PROFILE			= "edit and save public user profiles";
+    private final String PRIVILEGE_NAME_USL_MANAGE_PATIENTS	= "omusl_manage_patients";
+    private final String PRIVILEGE_DESCR_USL_MANAGE_PATIENTS	= "manage patients";
+    private final String PRIVILEGE_NAME_USL_MANAGE_STUDIES	= "omusl_manage_studies";
+    private final String PRIVILEGE_DESCR_USL_MANAGE_STUDIES	= "manage studies";
+    private final String PRIVILEGE_NAME_USL_PUSH_MONITOR		= "omusl_push_monitor";
+    private final String PRIVILEGE_DESCR_USL_PUSH_MONITOR	= "push monitor";
+    private final String PRIVILEGE_NAME_USL_STUDY_STATUS		= "omusl_study_status";
+    private final String PRIVILEGE_DESCR_USL_STUDY_STATUS	= "change study status";
+    private final String PRIVILEGE_NAME_USL_ADV_DEMO			= "omusl_adv_demo";
+    private final String PRIVILEGE_DESCR_USL_ADV_DEMO		= "work with advanced demographics";
+    private final String PRIVILEGE_NAME_USL_ADV_FILTERS		= "omusl_adv_filters";
+    private final String PRIVILEGE_DESCR_USL_ADV_FILTERS		= "work with advanced filters";
+    private final String PRIVILEGE_NAME_USL_WKLST_SCU		= "omusl_wklst_scu";
+    private final String PRIVILEGE_DESCR_USL_WKLST_SCU		= "worklist SCU";
+    private final String PRIVILEGE_NAME_USL_SCANNER			= "omusl_scanner";
+    private final String PRIVILEGE_DESCR_USL_SCANNER			= "scan documents";
+    private final String PRIVILEGE_NAME_USL_ATTACH			= "omusl_attach";
+    private final String PRIVILEGE_DESCR_USL_ATTACH			= "attach images";
+    private final String PRIVILEGE_NAME_USL_NON_DICOM		= "omusl_non_dicom";
+    private final String PRIVILEGE_DESCR_USL_NON_DICOM		= "attach non dicom files";
+    private final String PRIVILEGE_NAME_USL_LIGHTSCRIBE		= "omusl_lightscribe";
+    private final String PRIVILEGE_DESCR_USL_LIGHTSCRIBE		= "use lightscribe technology";
+    private final String PRIVILEGE_NAME_USL_CD_IMPORT		= "omusl_cd_import";
+    private final String PRIVILEGE_DESCR_USL_CD_IMPORT		= "cd import";
+    private final String PRIVILEGE_NAME_USL_JPEG_EXPORT		= "omusl_jpeg_export";
+    private final String PRIVILEGE_DESCR_USL_JPEG_EXPORT		= "jpeg export";
+    private final String PRIVILEGE_NAME_USL_VIRTUAL_CD		= "omusl_vcd";
+    private final String PRIVILEGE_DESCR_USL_VIRTUAL_CD		= "Virtual CD";
+    private final String PRIVILEGE_NAME_USL_VIRTUAL_CD_IMPORT	= "omusl_vcd_import";
+    private final String PRIVILEGE_DESCR_USL_VIRTUAL_CD_IMPORT	= "import from Virtual CD";
+    private final String PRIVILEGE_NAME_USL_ON_CALL			= "omusl_oncall_caching";
+    private final String PRIVILEGE_DESCR_USL_ON_CALL			= "use on-call caching in USL";
+    private final String PRIVILEGE_NAME_USL_RADVIEWER		= "omusl_radviewer";
+    private final String PRIVILEGE_DESCR_USL_RADVIEWER		= "launch radviewer";
+
+
+    private final String PRIVILEGE_NAME_ALLPRO_IMAGES		= "allpro_images";
+    private final String PRIVILEGE_DESCR_ALLPRO_IMAGES		= "work only with AllPro images";
+
+    private final String PRIVILEGE_NAME_AUTOUPDATE_RUN		= "autoupdate_run";
+    private final String PRIVILEGE_DESCR_AUTOUPDATE_RUN		= "run software auto updater";
+
+    private final String INSERT_LINE_ADMIN = ", 0, '', 'admin'";
+    private final String INSERT_LINE_EVERYONE = ", 0, 'everyone', ''";
 }

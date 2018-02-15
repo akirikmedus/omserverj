@@ -22,7 +22,7 @@ public class OMServer {
 	private void startWorking()
 	{
 		OMMDB db = new OMMDB();
-		if(!db.checkDBtables()) {
+		if(db.checkDBtables()) {
 			Logger.error("Database check failed. Cannot continue.");
 			return;
 		}
